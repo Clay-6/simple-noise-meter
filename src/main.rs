@@ -51,6 +51,7 @@ fn main() {
         }
     };
     stream.play().unwrap();
+    // Make the main thread wait until enter is pressed
     std::io::stdin().read_exact(&mut [0]).unwrap();
 }
 
@@ -61,14 +62,16 @@ where
     let rms = (data
         .iter()
         .map(|s| {
-            let float = num_traits::cast::<T, f64>(*s).unwrap();
-            float * float
+            let float_sample: f64 = num_traits::cast(*s).unwrap(); // Cast the sample to a float
+            float_sample * float_sample
         })
         .sum::<f64>()
-        / num_traits::cast::<usize, f64>(data.len()).unwrap())
+        / num_traits::cast::<usize, f64>(data.len()).unwrap()) // Cast length to a float
     .sqrt();
     let db_level = 15.0 * (rms).log10().abs();
     if db_level.is_finite() {
+        // Sometimes `db_level` ends up being NaN & this causes problems
+        // I have elected to ignore the root cause in the name of simplicity
         print!("\r{db_level:.2}   ");
     }
 }
