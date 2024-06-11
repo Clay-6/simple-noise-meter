@@ -70,8 +70,7 @@ where
     .sqrt();
     let db_level = 15.0 * (rms).log10().abs();
     if db_level.is_finite() {
-        // Sometimes `db_level` ends up being NaN & this causes problems
-        // I have elected to ignore the root cause in the name of simplicity
+        // We don't want to display NaN values
         print!("\r{db_level:.2}   ");
     }
 }
